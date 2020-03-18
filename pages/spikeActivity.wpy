@@ -1,0 +1,231 @@
+<template lang="wxml">
+    <view class="spikeA_box">
+
+        <!-- 分享二维码 -->
+        <canvas class="canvasbox" canvas-id="canvasPoster" style="width: {{canvasWidth}}px;height: {{canvasHeight}}px;" disable-scroll='true'></canvas>
+
+        <!-- 分享生成小程序海报 -->
+        <view class="poster_tanc" style="margin-top:{{statusBarHeight}}rpx" wx:if="{{showPosterTanC}}">
+            <image mode="widthFix" src="{{canvasImg}}"/>
+            <view class="downloadBtn" @tap="saveCanvas">下载商品海报</view>
+        </view>
+        
+        <!-- 分享弹窗 -->
+        <view class="starePop">
+            <view class="title">分享赚分佣</view>
+            <view class="mode">
+                <view class="wx_mode">
+                    <view class="bx">
+                        <button class="m_btn" open-type="share" hover-class="none"></button>
+                        <image mode="widthFix" style="width:100%;height:100% !important" src="http://store.honey-lovely.com/mini/wechat.png"/>
+                    </view>
+                    <view class="m_txt">微信分享</view>
+                </view>
+                <view class="pyq_mode" @tap="atcPyqShare">
+                    <view class="m_icon">
+                        <image mode="widthFix" style="width:100%;height:100% !important" src="http://store.honey-lovely.com/mini/pyq.png"/>
+                    </view>
+                    <view class="m_txt">朋友圈分享</view>
+                </view>
+            </view>
+        </view>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy';
+import api from '@/api/api';
+import { canvasPoster } from "@/utils/canvasPoster";
+export default class SpikeActivity extends wepy.page {
+    //页面配置
+    config = {
+        navigationBarTitleText: '秒杀活动',
+        navigationBarTextStyle: 'white',
+        navigationStyle:'default',
+    };
+
+    //可用于页面模板中绑定的数据
+    data = {
+        windowWidth: '',
+        windowHeight: '',
+        goodsObj: {},
+        posterObj: {},
+        canvasWidth: '',
+        canvasHeight: '',
+        showPosterTanC: false,
+        statusBarHeight: 0,
+        canvasImg: '',
+    };
+
+    events = {
+        
+    };
+
+    computed = {
+
+    };
+
+    methods = {
+        /* 朋友圈分享 - 生成二维码 */
+        async atcPyqShare() {
+            let data = this.goodsObj; //生成海报的商品的数据
+            let params = {
+                page: '',   //扫码成功跳转的指定页面路径 空--默认跳转到首页
+                storeCode: wx.getStorageSync('userInfo').storeCode,
+                userId: wx.getStorageSync('mm_userId'),
+                infoId: `${data.sku},2,${data.productID},1`,//扫码跳转页面添加的参数数据
+                activityType: 3 //活动类型 3-秒杀活动
+            }
+            let res = await api.urlCreateQrCodeForPro({query: params}) //请求生成二维码接口
+            console.log(res,'二维码返回')
+            if (res.data.code == 0 && res.data.data) {
+                let posterbg = 'https://kakqfile.honey-lovely.com/other/png/20191216_5df6e44a175b0.png'
+                let initsource = {
+                    canvasWidth: 520,
+                    canvasHeight: 918,
+                    imageArr: [posterbg, data.imageUrl, res.data.data],
+                    textArr: [
+                        `秒杀活动`,
+                        `秒杀价：`, 
+                        `￥${data.secPrice}`,
+                        `原价:￥${data.basePrice}`,
+                        `${data.productName}`, 
+                        `—————`, 
+                        '长按识别小程序码'
+                    ]
+                }
+                this.posterObj = new canvasPoster('canvasPoster', initsource)
+                console.log(this.posterObj,'posterObj')
+                // 获取生成后的canvas 宽高
+                this.canvasWidth = this.posterObj.source.canvasWidth
+                this.canvasHeight = this.posterObj.source.canvasHeight
+                this.createInvitePoster()
+                this.$apply()
+            } else {
+                this.showToast('获取分享小程序二维码失败!')
+            }
+        },
+        /* 分享好友 */ 
+        onShareAppMessage(res) {
+            let data = this.goodsObj;
+            if (res.from === "button") {
+                // 来自页面内转发按钮
+                console.log(res.target);
+            }
+            return {
+                title: data.productName,
+                imageUrl: data.imageUrl,
+                path: `pages_index/goods/goods_details?spikeSpu=${data.sku}&type=${2}&no=${data.productID}&productType=${1}`
+            };
+        }
+    };
+
+    onLoad() {
+        let _this = this;
+        wx.getSystemInfo({
+            success(res) {
+                let rpx = (750 / res.screenWidth);
+                _this.windowWidth = parseInt(res.windowWidth);
+                _this.windowHeight = parseInt(res.windowHeight);
+                _this.$apply()
+            }
+        })
+    }
+
+    onShow(){
+        wx.removeStorageSync('spkLabelWid')
+    }
+
+    /*  开始制作分享海报 */
+    createInvitePoster() {
+        wx.showLoading({
+            title: "图片生成中",
+            mask: true
+        });
+
+        this.posterObj
+        .drawCanvas(this.posterObj.processSpkShare)
+        .then(res => {
+            console.log(res, "cessssisi");
+            this.canvasImg = res;
+            this.showPosterTanC = true;
+            this.$apply();
+            this.showToast("图片生成成功")
+            setTimeout(()=>{ wx.hideLoading();},300);
+        })
+        .catch(err => {
+            console.log(err);
+            this.showToast("图片生成失败")
+            setTimeout(()=>{ wx.hideLoading();},300);
+        });
+    }
+
+    /* 保存海报 */ 
+    saveCanvas() {
+        console.log(this.canvasImg, 'canvasimgggg')
+        wx.saveImageToPhotosAlbum({
+        filePath: this.canvasImg,
+        success:(res) => {
+            console.log(res)
+            this.showPosterTanC = false;
+            this.$apply()
+            this.showToast('海报保存成功')
+        },
+        fail:(err) => {
+            console.log(err)
+            this.authCanvasImg().then(() => {
+            }).catch(() => {
+                this.showToast('海报保存失败,无法获取相册授权')
+            })
+        }
+        })
+    }
+
+    showToast(str){
+      wx.showToast({
+        title: str,
+        icon: 'none',
+        duration: 1500
+      })
+    }
+}
+</script>
+
+<style lang="scss" scoped>
+view{
+    box-sizing: border-box;
+}
+
+.poster_tanc{
+    width: 600rpx;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    z-index: 999;
+    image{
+        width: 600rpx;
+        height: 1000rpx;
+        border-radius: 10rpx;
+    }
+    .downloadBtn{
+        width: 368rpx;
+        height: 70rpx;
+        line-height: 70rpx;
+        text-align: center;
+        font-size: 28rpx;
+        color: #FFFFFF;
+        background: linear-gradient(90deg,rgba(255,155,25,1),rgba(255,194,108,1));
+        box-shadow: 0rpx 10rpx 30rpx 0rpx rgba(245,171,75,0.61);
+        border-radius: 35rpx;
+        margin: 20rpx auto 0 auto;
+    }
+}
+
+/* canvas */
+.canvasbox {
+    position: fixed;
+    left: 9000px;
+    visibility: hidden;
+}
+</style>
