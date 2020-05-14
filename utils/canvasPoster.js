@@ -243,113 +243,350 @@ export class canvasPoster {
         ctx.clip()
     }
     /*
-    *  定制canvas 画图 过程秒杀分享详情
+    *  定制canvas 画图 过程分享详情
     *  canvasData = class canvasPoster(this)
     */
-    processSpkShare(canvasData) {
-        console.log(canvasData, 'datat')
-        let {ctx, unit} = canvasData
-        let {resImg, textArr, canvasHeight, canvasWidth} = canvasData.source
+    process(canvasData) {
+        console.log(canvasData, 'canvasData')
+        let {ctx, unit} = canvasData;
+        let {resImg, resImg2, textArr, giftNameArr, couponTypeArr, couponAmountArr, canvasHeight, canvasWidth} = canvasData.source;
 
-        // 生成背景图 resImg[0] 商品图片 resImg[1] 分享二维码(暂无) resImg[2]
-        // textArr  0.商品名称1.商品价格
-
+        // resImg对应imageArr  resImg2对应picArr
+        // 生成背景图--resImg[0] 分享二维码--resImg[1]
         ctx.drawImage(resImg[0].path, 0, 0, resImg[0].width, resImg[0].height, 0, 0, canvasWidth, canvasHeight)
-        
-        ctx.save()
-        canvasData.roundRect(ctx, 58*unit,150*unit,400*unit, 540*unit, 10*unit,'#FF9B19')
-        ctx.restore()
-
-        // 设置商品图片
-        ctx.save()
-        canvasData.roundRect(ctx, 60*unit, 152*unit,396*unit, 396*unit, 10*unit)
-        ctx.drawImage(resImg[1].path, 0, 0, resImg[1].width, resImg[1].height, 60*unit, 152*unit,396*unit, 396*unit)
-        ctx.restore()
-        
-        let labelWid = wx.getStorageSync('spkLabelWid');
-        if (!labelWid) {
-            wx.setStorageSync('spkLabelWid', ctx.measureText(textArr[0]).width)
-            labelWid = ctx.measureText(textArr[0]).width;
-        }
-        let t0width = labelWid * textArr[0].length
-
-        console.log(textArr,'textArrtextArr')
-
-        if (textArr[0].length == 5) {
-            ctx.save()
-            // 设置文本颜色
-            canvasData.roundRect(ctx, 70*unit, 574*unit,t0width + 45, 36*unit, 20*unit, '#EF5E29')
-            ctx.restore()
-
-            ctx.save()
-            ctx.setFillStyle('#fff')
-            ctx.setFontSize(24*unit)
-            canvasData.drawText(textArr[0], 82*unit, 600*unit, 230*unit, 24*unit, 2)
-            ctx.restore()
-        } else if (textArr[0].length == 4) {
-            ctx.save()
-            // 设置文本颜色
-            canvasData.roundRect(ctx, 65*unit, 574*unit,t0width+80, 36*unit, 20*unit, '#EF5E29')
-            ctx.restore()
-            
-            ctx.save()
-            ctx.setFillStyle('#fff')
-            ctx.setFontSize(24*unit)
-            canvasData.drawText(textArr[0], 82*unit, 600*unit, 230*unit, 24*unit, 2)
-            ctx.restore()
-        }
-
-        // 设置拼团文案
-        ctx.save()
-        ctx.setFillStyle('#FF0000')
-        ctx.setFontSize(24*unit)
-        canvasData.drawText(textArr[1], 220*unit, 600*unit, 450*unit, 30*unit, 1)
-        ctx.restore()
-
-        // 拼团价
-        ctx.save()
-        ctx.setFillStyle('#FF0101')
-        ctx.setFontSize(40*unit)
-        canvasData.drawText(textArr[2], 300*unit, 600*unit, 450*unit, 30*unit, 1)
-        ctx.restore()
-
-        ctx.save()
-        ctx.setFillStyle('#fff')
-        ctx.setFontSize(24*unit)
-        canvasData.drawText(textArr[3], 70*unit, 660*unit, 450*unit, 40*unit, 1)
-        ctx.restore()
-
-
-        // 商品名称
-        ctx.save()
-        ctx.setFillStyle('#999999')
-        ctx.setFontSize(24*unit)
-        canvasData.drawText(textArr[4], 74*unit, 750*unit, 300*unit, 24*unit, 1)
-        ctx.restore()
-        
-        // 原价
-        let t5width = ctx.measureText(textArr[5]).width
-
-        ctx.save()
-        ctx.setFillStyle('#fff')
-        ctx.setFontSize(24*unit)
-        canvasData.drawText(textArr[5], 68*unit, 660*unit, 450*unit, 40*unit, 1)
-        ctx.restore()
-
-        // 设置小程序二维码
-        ctx.save()
-        ctx.setFillStyle('#999999')
-        ctx.setFontSize(22*unit)
-        canvasData.drawText(textArr[6], 300*unit, 880*unit, 490*unit, 22*unit, 1)
-        ctx.restore()
-
         ctx.save()
         ctx.beginPath()
-        ctx.arc(385*unit,780*unit, 75*unit, 0, 2*Math.PI)
-        ctx.clip()
-        ctx.drawImage(resImg[2].path, 0, 0, resImg[2].width, resImg[2].height,310*unit,704*unit,150*unit,  150*unit)
+        ctx.arc(522 * unit, 945 * unit, 75 * unit, 0, 2 * Math.PI);
+        ctx.clip();
+        ctx.drawImage(resImg[1].path, 0, 0, resImg[1].width, resImg[1].height, 447 * unit, 870 * unit, 150 * unit, 150 * unit);
         ctx.restore()
 
+        // 活动名称
+        ctx.save()
+        ctx.setFillStyle('#FFFFFF')
+        ctx.setFontSize(60*unit)
+        ctx.setTextAlign('center')
+        canvasData.drawText(textArr[0], 336*unit, 123*unit, 880*unit, 60*unit, 1)
+        ctx.restore()
+
+        // 活动时间
+        ctx.save()
+        ctx.setFillStyle('#FFFFFF')
+        ctx.setFontSize(30*unit)
+        canvasData.drawText(textArr[1], 208*unit, 183*unit, 580*unit, 30*unit, 1)
+        ctx.restore()
+
+        // 活动提示
+        ctx.save()
+        ctx.setFillStyle('#FFFFFF')
+        ctx.setFontSize(24*unit)
+        ctx.setTextAlign('center')
+        canvasData.drawText(textArr[2], 340*unit, 270*unit, 950*unit, 24*unit, 1)
+        ctx.restore()
+
+        // 门店名称
+        ctx.save()
+        ctx.setFillStyle('#FFFFFF')
+        ctx.setFontSize(36*unit)
+        ctx.setTextAlign('center')
+        canvasData.drawText(textArr[3], 230*unit, 1006*unit, 620*unit, 36*unit, 1)
+        ctx.restore()
+        
+        if (resImg2.length) {
+            for (var i=0; i<resImg2.length; i++) {
+                switch(i){
+                    case 0: 
+                        // 设置奖品图片
+                        ctx.save()
+                        canvasData.roundRect(ctx, 69*unit, 358*unit, 182*unit, 150*unit, 20*unit, 'transparent')
+                        ctx.drawImage(resImg2[0].path, 0, 0, resImg2[0].width, resImg2[0].height, 110*unit, 368*unit, 100*unit, 90*unit)
+                        ctx.restore()
+                        // 设置奖品名称
+                        ctx.save()
+                        ctx.setFillStyle('#7F3E3E')
+                        ctx.setTextAlign('center')
+                        ctx.setFontSize(24*unit)
+                        canvasData.drawText(giftNameArr[0], 160*unit, 492*unit, 336*unit, 24*unit, 1)
+                        ctx.restore()
+                        // 设置优惠券的类型
+                        if (couponTypeArr[0] !== null) {
+                            ctx.save()
+                            ctx.setFillStyle('#FFFFFF')
+                            ctx.setFontSize(20*unit)
+                            if (couponTypeArr[0]==1||couponTypeArr[0]==2) {
+                                ctx.fillText('￥', 120*unit, 440*unit)
+                                
+                            } else if (couponTypeArr[0]==3) {
+                                ctx.fillText('折', 176*unit, 440*unit)
+                            }
+                            ctx.restore()
+                        }
+                        // 设置优惠券的值
+                        if (couponAmountArr[0] !== null) {
+                            ctx.save()
+                            ctx.setFillStyle('#FFFFFF')
+                            ctx.setFontSize(42*unit)
+                            ctx.setTextAlign('center')
+                            ctx.fillText(couponAmountArr[0], 160*unit, 440*unit, 60*unit)
+                            ctx.restore()
+                        }
+                        break;
+                    case 1: 
+                        // 设置奖品图片
+                        ctx.save()
+                        canvasData.roundRect(ctx, 252*unit, 358*unit, 182*unit, 150*unit, 20*unit, 'transparent')
+                        ctx.drawImage(resImg2[1].path, 0, 0, resImg2[1].width, resImg2[1].height, 292*unit, 368*unit, 100*unit, 90*unit)
+                        ctx.restore()
+                        // 设置奖品名称
+                        ctx.save()
+                        ctx.setFillStyle('#7F3E3E')
+                        ctx.setTextAlign('center')
+                        ctx.setFontSize(24*unit)
+                        canvasData.drawText(giftNameArr[1], 345*unit, 492*unit, 536*unit, 24*unit, 1)
+                        ctx.restore()
+                        // 设置优惠券的类型
+                        if (couponTypeArr[1] !== null) {
+                            ctx.save()
+                            ctx.setFillStyle('#FFFFFF')
+                            ctx.setFontSize(20*unit)
+                            if (couponTypeArr[1]==1||couponTypeArr[1]==2) {
+                                ctx.fillText('￥', 302*unit, 440*unit)
+                                
+                            } else if (couponTypeArr[1]==3) {
+                                ctx.fillText('折', 358*unit, 440*unit)
+                            }
+                            ctx.restore()
+                        }
+                        // 设置优惠券的值
+                        if (couponAmountArr[1] !== null) {
+                            ctx.save()
+                            ctx.setFillStyle('#FFFFFF')
+                            ctx.setFontSize(42*unit)
+                            ctx.setTextAlign('center')
+                            ctx.fillText(couponAmountArr[1], 342*unit, 440*unit, 60*unit)
+                            ctx.restore()
+                        }
+                        break;
+                    case 2: 
+                        // 设置奖品图片
+                        ctx.save()
+                        canvasData.roundRect(ctx, 435*unit, 358*unit, 182*unit, 150*unit, 20*unit, 'transparent')
+                        ctx.drawImage(resImg2[2].path, 0, 0, resImg2[2].width, resImg2[2].height, 478*unit, 368*unit, 100*unit, 90*unit)
+                        ctx.restore()
+                        // 设置奖品名称
+                        ctx.save()
+                        ctx.setFillStyle('#7F3E3E')
+                        ctx.setTextAlign('center')
+                        ctx.setFontSize(24*unit)
+                        canvasData.drawText(giftNameArr[2], 528*unit, 492*unit, 716*unit, 24*unit, 1)
+                        ctx.restore()
+                        // 设置优惠券的类型
+                        if (couponTypeArr[2] !== null) {
+                            ctx.save()
+                            ctx.setFillStyle('#FFFFFF')
+                            ctx.setFontSize(20*unit)
+                            if (couponTypeArr[2]==1||couponTypeArr[2]==2) {
+                                ctx.fillText('￥', 485*unit, 440*unit)
+                                
+                            } else if (couponTypeArr[2]==3) {
+                                ctx.fillText('折', 541*unit, 440*unit)
+                            }
+                            ctx.restore()
+                        }
+                        // 设置优惠券的值
+                        if (couponAmountArr[2] !== null) {
+                            ctx.save()
+                            ctx.setFillStyle('#FFFFFF')
+                            ctx.setFontSize(42*unit)
+                            ctx.setTextAlign('center')
+                            ctx.fillText(couponAmountArr[2], 524*unit, 440*unit, 60*unit)
+                            ctx.restore()
+                        }
+                        break;
+                    case 3: 
+                        // 设置奖品图片
+                        ctx.save()
+                        canvasData.roundRect(ctx, 69*unit, 508*unit, 182*unit, 150*unit, 20*unit, 'transparent')
+                        ctx.drawImage(resImg2[3].path, 0, 0, resImg2[3].width, resImg2[3].height, 110*unit, 518*unit, 100*unit, 90*unit)
+                        ctx.restore()
+                        // 设置奖品名称
+                        ctx.save()
+                        ctx.setFillStyle('#7F3E3E')
+                        ctx.setTextAlign('center')
+                        ctx.setFontSize(24*unit)
+                        canvasData.drawText(giftNameArr[3], 160*unit, 642*unit, 336*unit, 24*unit, 1)
+                        ctx.restore()
+                        // 设置优惠券的类型
+                        if (couponTypeArr[3] !== null) {
+                            ctx.save()
+                            ctx.setFillStyle('#FFFFFF')
+                            ctx.setFontSize(20*unit)
+                            if (couponTypeArr[3]==1||couponTypeArr[3]==2) {
+                                ctx.fillText('￥', 120*unit, 590*unit)
+                                
+                            } else if (couponTypeArr[3]==3) {
+                                ctx.fillText('折', 176*unit, 590*unit)
+                            }
+                            ctx.restore()
+                        }
+                        // 设置优惠券的值
+                        if (couponAmountArr[3] !== null) {
+                            ctx.save()
+                            ctx.setFillStyle('#FFFFFF')
+                            ctx.setFontSize(42*unit)
+                            ctx.setTextAlign('center')
+                            ctx.fillText(couponAmountArr[3], 160*unit, 590*unit, 60*unit)
+                            ctx.restore()
+                        }
+                        break;
+                    case 4: 
+                        // 设置奖品图片
+                        ctx.save()
+                        canvasData.roundRect(ctx, 435*unit, 508*unit, 182*unit, 150*unit, 20*unit, 'transparent')
+                        ctx.drawImage(resImg2[4].path, 0, 0, resImg2[4].width, resImg2[4].height, 478*unit, 518*unit, 100*unit, 90*unit)
+                        ctx.restore()
+                        // 设置奖品名称
+                        ctx.save()
+                        ctx.setFillStyle('#7F3E3E')
+                        ctx.setTextAlign('center')
+                        ctx.setFontSize(24*unit)
+                        canvasData.drawText(giftNameArr[4], 528*unit, 642*unit, 716*unit, 24*unit, 1)
+                        ctx.restore()
+                        // 设置优惠券的类型
+                        if (couponTypeArr[4] !== null) {
+                            ctx.save()
+                            ctx.setFillStyle('#FFFFFF')
+                            ctx.setFontSize(20*unit)
+                            if (couponTypeArr[4]==1||couponTypeArr[4]==2) {
+                                ctx.fillText('￥', 485*unit, 590*unit)
+                                
+                            } else if (couponTypeArr[4]==3) {
+                                ctx.fillText('折', 541*unit, 590*unit)
+                            }
+                            ctx.restore()
+                        }
+                        // 设置优惠券的值
+                        if (couponAmountArr[4] !== null) {
+                            ctx.save()
+                            ctx.setFillStyle('#FFFFFF')
+                            ctx.setFontSize(42*unit)
+                            ctx.setTextAlign('center')
+                            ctx.fillText(couponAmountArr[4], 524*unit, 590*unit, 60*unit)
+                            ctx.restore()
+                        }
+                        break;
+                    case 5: 
+                        // 设置奖品图片
+                        ctx.save()
+                        canvasData.roundRect(ctx, 69*unit, 658*unit, 182*unit, 150*unit, 20*unit, 'transparent')
+                        ctx.drawImage(resImg2[5].path, 0, 0, resImg2[5].width, resImg2[5].height, 110*unit, 668*unit, 100*unit, 90*unit)
+                        ctx.restore()
+                        // 设置奖品名称
+                        ctx.save()
+                        ctx.setFillStyle('#7F3E3E')
+                        ctx.setTextAlign('center')
+                        ctx.setFontSize(24*unit)
+                        canvasData.drawText(giftNameArr[5], 160*unit, 792*unit, 336*unit, 24*unit, 1)
+                        ctx.restore()
+                        // 设置优惠券的类型
+                        if (couponTypeArr[5] !== null) {
+                            ctx.save()
+                            ctx.setFillStyle('#FFFFFF')
+                            ctx.setFontSize(20*unit)
+                            if (couponTypeArr[5]==1||couponTypeArr[5]==2) {
+                                ctx.fillText('￥', 120*unit, 740*unit)
+                                
+                            } else if (couponTypeArr[5]==3) {
+                                ctx.fillText('折', 176*unit, 740*unit)
+                            }
+                            ctx.restore()
+                        }
+                        // 设置优惠券的值
+                        if (couponAmountArr[5] !== null) {
+                            ctx.save()
+                            ctx.setFillStyle('#FFFFFF')
+                            ctx.setFontSize(42*unit)
+                            ctx.setTextAlign('center')
+                            ctx.fillText(couponAmountArr[5], 160*unit, 740*unit, 60*unit)
+                            ctx.restore()
+                        }
+                        break;
+                    case 6: 
+                        // 设置奖品图片
+                        ctx.save()
+                        canvasData.roundRect(ctx, 252*unit, 658*unit, 182*unit, 150*unit, 20*unit, 'transparent')
+                        ctx.drawImage(resImg2[6].path, 0, 0, resImg2[6].width, resImg2[6].height, 292*unit, 668*unit, 100*unit, 90*unit)
+                        ctx.restore()
+                        // 设置奖品名称
+                        ctx.save()
+                        ctx.setFillStyle('#7F3E3E')
+                        ctx.setTextAlign('center')
+                        ctx.setFontSize(24*unit)
+                        canvasData.drawText(giftNameArr[6], 345*unit, 792*unit, 536*unit, 24*unit, 1)
+                        ctx.restore()
+                        // 设置优惠券的类型
+                        if (couponTypeArr[6] !== null) {
+                            ctx.save()
+                            ctx.setFillStyle('#FFFFFF')
+                            ctx.setFontSize(20*unit)
+                            if (couponTypeArr[6]==1||couponTypeArr[6]==2) {
+                                ctx.fillText('￥', 302*unit, 740*unit)
+                                
+                            } else if (couponTypeArr[6]==3) {
+                                ctx.fillText('折', 358*unit, 740*unit)
+                            }
+                            ctx.restore()
+                        }
+                        // 设置优惠券的值
+                        if (couponAmountArr[6] !== null) {
+                            ctx.save()
+                            ctx.setFillStyle('#FFFFFF')
+                            ctx.setFontSize(42*unit)
+                            ctx.setTextAlign('center')
+                            ctx.fillText(couponAmountArr[6], 342*unit, 740*unit, 60*unit)
+                            ctx.restore()
+                        }
+                        break;
+                    case 7: 
+                        // 设置奖品图片
+                        ctx.save()
+                        canvasData.roundRect(ctx, 435*unit, 658*unit, 182*unit, 150*unit, 20*unit, 'transparent')
+                        ctx.drawImage(resImg2[7].path, 0, 0, resImg2[7].width, resImg2[7].height, 478*unit, 668*unit, 100*unit, 90*unit)
+                        ctx.restore()
+                        // 设置奖品名称
+                        ctx.save()
+                        ctx.setFillStyle('#7F3E3E')
+                        ctx.setTextAlign('center')
+                        ctx.setFontSize(24*unit)
+                        canvasData.drawText(giftNameArr[7], 528*unit, 792*unit, 716*unit, 24*unit, 1)
+                        ctx.restore()
+                        // 设置优惠券的类型
+                        if (couponTypeArr[7] !== null) {
+                            ctx.save()
+                            ctx.setFillStyle('#FFFFFF')
+                            ctx.setFontSize(20*unit)
+                            if (couponTypeArr[7]==1||couponTypeArr[7]==2) {
+                                ctx.fillText('￥', 485*unit, 740*unit)
+                                
+                            } else if (couponTypeArr[7]==3) {
+                                ctx.fillText('折', 541*unit, 740*unit)
+                            }
+                            ctx.restore()
+                        }
+                        // 设置优惠券的值
+                        if (couponAmountArr[7] !== null) {
+                            ctx.save()
+                            ctx.setFillStyle('#FFFFFF')
+                            ctx.setFontSize(42*unit)
+                            ctx.setTextAlign('center')
+                            ctx.fillText(couponAmountArr[7], 524*unit, 740*unit, 60*unit)
+                            ctx.restore()
+                        }
+                        break;
+                }
+            }
+        }
+        
     }
 }
 
